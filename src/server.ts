@@ -1,5 +1,4 @@
 import app from "./app";
-import * as reddit from './util/reddit'
 
 const server = app.listen(app.get("port"), () => {
     console.log(
@@ -9,9 +8,5 @@ const server = app.listen(app.get("port"), () => {
     );
     console.log("  Press CTRL-C to stop\n");
 });
-
-reddit.fetchPosts('photoshopbattles').then((data => {
-    console.log(data)
-}))
 
 export default server;
