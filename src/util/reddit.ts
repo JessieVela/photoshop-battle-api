@@ -43,9 +43,9 @@ interface CommentResponse {
 // Our generic Comment interface
 interface Comment {
   id: string
-  // TODO: should probably parse the body and return { text: string, url: string }
-  body: string
+  body?: string
   url: string
+  text: string
 }
 
 export default class Reddit {
@@ -87,14 +87,14 @@ export default class Reddit {
     )
   }
 
-  fetchComments = async (id: string) => {
+  fetchComments = async (id: string): Promise<Comment[]> => {
     const response: CommentResponse[] = (await axios.get(`https://www.reddit.com/comments/${id}.json`)).data
     // Comment response returns an array, the first item in the array appears to be a comment generated
     // by the moderator?, so we grab the next array item (the actual post responses)
     return response[response.length - 1].data.children.map((comment: { data: Comment }) => {
       // Transform data from CommentResponse to Comment bc the CommentResponse has a lot of properties we don't care about
       const body = comment.data.body
-      // Parse comments that put the imnage url in markdown.
+      // Parse comments that put the image url in markdown.
       // Example: "[Spiderman in Prayer](https://imgur.com/gallery/zK1NiXa)"
       let match = body ? body.match(/\[(.*?)]\((.*?)\)/) : undefined
       // Parse commits that put the image tag as just plain text
@@ -102,7 +102,7 @@ export default class Reddit {
       if (!match || !match.length) match = body ? body.match(/\bhttps?:\/\/\S+/gi) : undefined
       const text = match && match.length ? match[1] : ''
       const url = match && match.length ? match[2] : ''
-      return { id: comment.data.id, body, url, text }
+      return { id: comment.data.id, url, text }
     })
   }
 }
