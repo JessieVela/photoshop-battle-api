@@ -1,4 +1,5 @@
 import axios from 'axios'
+import {Post, Comment} from "../models/posts";
 
 // Response returned from reddit when querying a subredit's posts
 interface SubredditResponse {
@@ -9,27 +10,7 @@ interface SubredditResponse {
   }
 }
 
-// Our generic Post interface
-interface Post {
-  title: string
-  url: string
-  id: string
-  preview: {
-    images: Image[]
-  }
-  comments: Comment[]
-}
 
-interface Image {
-  source: Source
-  resolutions: Source[]
-}
-
-interface Source {
-  url: string
-  width: number
-  height: number
-}
 
 // Response returned from reddit when querying a post's comments
 interface CommentResponse {
@@ -40,13 +21,6 @@ interface CommentResponse {
   }
 }
 
-// Our generic Comment interface
-interface Comment {
-  id: string
-  body?: string
-  url: string
-  text: string
-}
 
 export default class Reddit {
   posts: Post[]
