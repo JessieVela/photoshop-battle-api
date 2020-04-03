@@ -31,4 +31,8 @@ export interface Comment {
 const reddit = new Reddit('photoshopbattles')
 reddit.run()
 
-export default reddit
+export const get = (): Post[] => {
+    return reddit.posts
+}
+
+// export default reddit

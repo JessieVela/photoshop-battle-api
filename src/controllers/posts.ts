@@ -1,6 +1,6 @@
 import {Request, Response} from "express";
-import reddit from "../models/posts";
+import * as posts from "../models/posts";
 
 export const getPosts = (req: Request, res: Response) => {
-        res.json(reddit.posts)
+        res.json(posts.get())
 }
