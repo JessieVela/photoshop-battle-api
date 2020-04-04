@@ -5,6 +5,8 @@ export interface Post {
     url: string
     id: string
     stickied: boolean,
+    created_utc: number,
+    author: string,
     preview: {
         images: Image[]
     }
