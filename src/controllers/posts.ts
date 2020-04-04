@@ -1,5 +1,6 @@
 import {Request, Response} from "express";
+import * as posts from "../models/posts";
 
 export const getPosts = (req: Request, res: Response) => {
-    res.status(200).send()
+        res.json(posts.get())
 }
