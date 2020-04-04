@@ -63,22 +63,30 @@ export default class Reddit {
     // Comment response returns an array, the first item in the array appears to be a comment generated
     // by the moderator?, so we grab the next array item (the actual post responses)
     return response[response.length - 1].data.children
-      .filter(
-        child => this.isValidComment(child.data.body)
-      ) // Remove deleted comments
+      .filter(child => this.isValidComment(child.data.body)) // Remove deleted comments
       .map((comment: { data: Comment }) => {
         // Transform data from CommentResponse to Comment bc the CommentResponse has a lot of properties we don't care about
-        const body = comment.data.body
-        console.log(body)
+        const body = comment.data.body.split('\n').join(' ') // Remove empty lines TODO: only add one whitespace for all empty lines
+
+        let text = ''
+        let url = ''
+
         // Parse comments that put the image url in markdown.
         // Example: "[Spiderman in Prayer](https://imgur.com/gallery/zK1NiXa)"
         let match = body ? body.match(/\[(.*?)]\((.*?)\)/) : undefined
+        text = match && match.length ? match[1] : ''
+        url = match && match.length ? match[2] : ''
+
         // Parse commits that put the image tag as just plain text
         // Example: "https://imgur.com/a/aNP2s8k"
-        if (!match || !match.length) match = body ? body.match(/\bhttps?:\/\/\S+/gi) : undefined
-        const text = match && match.length ? match[1] : ''
-        const url = match && match.length ? match[2] : ''
-        return { id: comment.data.id, url, text, body}
+        if (!match || !match.length) {
+          match = body ? body.match(/\bhttps?:\/\/\S+/gi) : undefined
+          if (match && match.length) {
+            url = match[0]
+            text = body.replace(url, '')
+          }
+        }
+        return { id: comment.data.id, url, text, body }
       })
   }
   isValidComment = (body: string): boolean => {
