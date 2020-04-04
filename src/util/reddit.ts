@@ -1,5 +1,5 @@
 import axios from 'axios'
-import {Post, Comment} from "../models/posts";
+import { Post, Comment } from '../models/posts'
 
 // Response returned from reddit when querying a subredit's posts
 interface SubredditResponse {
@@ -10,8 +10,6 @@ interface SubredditResponse {
   }
 }
 
-
-
 // Response returned from reddit when querying a post's comments
 interface CommentResponse {
   data: {
@@ -20,7 +18,6 @@ interface CommentResponse {
     }[]
   }
 }
-
 
 export default class Reddit {
   posts: Post[]
@@ -65,18 +62,26 @@ export default class Reddit {
     const response: CommentResponse[] = (await axios.get(`https://www.reddit.com/comments/${id}.json`)).data
     // Comment response returns an array, the first item in the array appears to be a comment generated
     // by the moderator?, so we grab the next array item (the actual post responses)
-    return response[response.length - 1].data.children.map((comment: { data: Comment }) => {
-      // Transform data from CommentResponse to Comment bc the CommentResponse has a lot of properties we don't care about
-      const body = comment.data.body
-      // Parse comments that put the image url in markdown.
-      // Example: "[Spiderman in Prayer](https://imgur.com/gallery/zK1NiXa)"
-      let match = body ? body.match(/\[(.*?)]\((.*?)\)/) : undefined
-      // Parse commits that put the image tag as just plain text
-      // Example: "https://imgur.com/a/aNP2s8k"
-      if (!match || !match.length) match = body ? body.match(/\bhttps?:\/\/\S+/gi) : undefined
-      const text = match && match.length ? match[1] : ''
-      const url = match && match.length ? match[2] : ''
-      return { id: comment.data.id, url, text }
-    })
+    return response[response.length - 1].data.children
+      .filter(
+        child => this.isValidComment(child.data.body)
+      ) // Remove deleted comments
+      .map((comment: { data: Comment }) => {
+        // Transform data from CommentResponse to Comment bc the CommentResponse has a lot of properties we don't care about
+        const body = comment.data.body
+        console.log(body)
+        // Parse comments that put the image url in markdown.
+        // Example: "[Spiderman in Prayer](https://imgur.com/gallery/zK1NiXa)"
+        let match = body ? body.match(/\[(.*?)]\((.*?)\)/) : undefined
+        // Parse commits that put the image tag as just plain text
+        // Example: "https://imgur.com/a/aNP2s8k"
+        if (!match || !match.length) match = body ? body.match(/\bhttps?:\/\/\S+/gi) : undefined
+        const text = match && match.length ? match[1] : ''
+        const url = match && match.length ? match[2] : ''
+        return { id: comment.data.id, url, text, body}
+      })
+  }
+  isValidComment = (body: string): boolean => {
+    return body !== '[deleted]' && body !== undefined && body !== '[removed]' && body !== ''
   }
 }

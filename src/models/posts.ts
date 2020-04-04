@@ -27,7 +27,7 @@ interface Source {
 // Generic Comment interface
 export interface Comment {
     id: string
-    body?: string
+    body: string
     url: string
     text: string
 }
