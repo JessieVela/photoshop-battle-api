@@ -4,6 +4,7 @@ export interface Post {
     title: string
     url: string
     id: string
+    stickied: boolean,
     preview: {
         images: Image[]
     }

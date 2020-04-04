@@ -52,11 +52,11 @@ export default class Reddit {
     return Promise.all(
       response.data.children.map(async (post: { data: Post }) => {
         // Transform data from SubredditResponse to Post bc the SubredditResponse has a lot of properties we don't care about
-        const { title, url, id } = post.data
+        const { title, url, id, stickied } = post.data
         const preview = { images: post.data.preview.images }
         const comments = await this.fetchComments(id)
         // TODO: handle 'undefined' comments
-        return { title, url, id, preview, comments }
+        return { title, url, id, preview, comments, stickied }
       }),
     )
   }
