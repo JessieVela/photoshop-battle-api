@@ -21,7 +21,7 @@ app.disable('x-powered-by') // remove header
 app.disable('etag')
 
 if (env === 'production') {
-  app.use(cors({ credentials: true, origin: 'https://testing.com' }))
+  app.use(cors({ credentials: true, origin: 'https://photoshop-battle.herokuapp.com' }))
 } else {
   app.use(cors())
 }
