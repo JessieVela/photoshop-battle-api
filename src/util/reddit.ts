@@ -72,6 +72,10 @@ export default class Reddit {
 
         let text = ''
         let url = ''
+        let author = ''
+
+        // Parse comments for author
+        author = comment.data.author
 
         // Parse comments that put the image url in markdown.
         // Example: "[Spiderman in Prayer](https://imgur.com/gallery/zK1NiXa)"
@@ -88,7 +92,7 @@ export default class Reddit {
             text = body.replace(url, '')
           }
         }
-        return { id: comment.data.id, url, text, body }
+        return { id: comment.data.id, author, url, text, body }
       })
   }
   isValidComment = (body: string): boolean => {

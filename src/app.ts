@@ -10,7 +10,7 @@ import * as postsController from './controllers/posts'
 // Create Express server
 const app = express()
 
-// Set enviroment type.
+// Set environment type.
 const env = app.get('env')
 
 // Express configuration
@@ -33,7 +33,7 @@ app.use(
 )
 
 // Health status route
-app.get('/', (req: Request, res: Response) => {  
+app.get('/', (req: Request, res: Response) => {
   res.end()
 })
 
