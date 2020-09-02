@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "npm run serve",
+    "start": "npm node server.js",
     "build": "npm run build-ts",
     "serve": "node dist/server.js",
     "watch-node": "nodemon dist/server.js",
