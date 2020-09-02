@@ -47,14 +47,16 @@ export default class Reddit {
   fetchPosts = async (): Promise<Post[]> => {
     const response: SubredditResponse = (await axios.get(`https://www.reddit.com/r/${this.subreddit}.json`)).data
     return Promise.all(
-      response.data.children.map(async (post: { data: Post }) => {
-        // Transform data from SubredditResponse to Post bc the SubredditResponse has a lot of properties we don't care about
-        const { title, url, id, stickied, created_utc, author } = post.data
-        const preview = { images: post.data.preview.images }
-        const comments = await this.fetchComments(id)
-        // TODO: handle 'undefined' comments
-        return { title, url, id, preview, comments, stickied, created_utc, author }
-      }),
+      response.data.children
+        .filter((post: { data: Post }) => post.data.preview)
+        .map(async (post: { data: Post }) => {
+          // Transform data from SubredditResponse to Post bc the SubredditResponse has a lot of properties we don't care about
+          const { title, url, id, stickied, created_utc, author } = post.data
+          const preview = { images: post.data.preview.images }
+          const comments = await this.fetchComments(id)
+          // TODO: handle 'undefined' comments
+          return { title, url, id, preview, comments, stickied, created_utc, author }
+        }),
     )
   }
 
@@ -63,7 +65,7 @@ export default class Reddit {
     // Comment response returns an array, the first item in the array appears to be a comment generated
     // by the moderator?, so we grab the next array item (the actual post responses)
     return response[response.length - 1].data.children
-      .filter(child => this.isValidComment(child.data.body)) // Remove deleted comments
+      .filter((child) => this.isValidComment(child.data.body)) // Remove deleted comments
       .map((comment: { data: Comment }) => {
         // Transform data from CommentResponse to Comment bc the CommentResponse has a lot of properties we don't care about
         const body = comment.data.body.split('\n').join(' ') // Remove empty lines TODO: only add one whitespace for all empty lines
@@ -91,5 +93,8 @@ export default class Reddit {
   }
   isValidComment = (body: string): boolean => {
     return body !== '[deleted]' && body !== undefined && body !== '[removed]' && body !== ''
+  }
+  isValidPost = (images: string): boolean => {
+    return images !== '[deleted]' && images !== undefined && images !== '[removed]' && images !== ''
   }
 }
