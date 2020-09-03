@@ -4,8 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "npm run serve",
-    "build": "npm run build-ts && npm run lint",
+    "start": "npm node server.js",
+    "build": "npm run build-ts",
     "serve": "node dist/server.js",
     "watch-node": "nodemon dist/server.js",
     "watch": "concurrently -k -p \"[{name} {time}]\" -n \"TypeScript,Node\" -c \"cyan.bold,green.bold\" \"npm run watch-ts\" \"npm run watch-node\"",
@@ -36,10 +36,11 @@
     "*.{js,css,md}": "prettier --write"
   },
   "dependencies": {
+    "axios": "latest",
     "body-parser": "^1.19.0",
+    "cors": "^2.8.5",
     "express": "latest",
-    "morgan": "latest",
-    "axios": "latest"
+    "morgan": "latest"
   },
   "devDependencies": {
     "@types/express": "^4.17.3",

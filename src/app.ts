@@ -2,6 +2,7 @@ import express from 'express'
 import { Request, Response } from 'express'
 import bodyParser from 'body-parser'
 import morgan from 'morgan'
+var cors = require('cors')
 
 // Controllers (route handlers)
 import * as postsController from './controllers/posts'
@@ -9,12 +10,21 @@ import * as postsController from './controllers/posts'
 // Create Express server
 const app = express()
 
+// Set environment type.
+const env = app.get('env')
+
 // Express configuration
-app.set('port', process.env.PORT || 3000)
+app.set('port', process.env.PORT || 9000)
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
 app.disable('x-powered-by') // remove header
+app.disable('etag')
 
+if (env === 'production') {
+  app.use(cors({ credentials: true, origin: 'https://photoshop-battle.herokuapp.com' }))
+} else {
+  app.use(cors())
+}
 // Express request logging
 app.use(
   morgan(
